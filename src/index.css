@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-cyber-bg: #070B14;
+  --color-cyber-sidebar: #0E1726;
+  --color-cyber-card: #131D2E;
+  --color-cyber-blue: #3B82F6;
+  --color-cyber-red: #EF4444;
+  --color-cyber-warning: #F59E0B;
+  --color-cyber-success: #10B981;
+}
+
+body {
+  background-color: var(--color-cyber-bg);
+  color: #f3f4f6;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #070b14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+/* Cyber Matrix Grid Background Effect */
+.cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.cyber-grid-radial {
+  background: radial-gradient(circle 800px at 50% 200px, rgba(59, 130, 246, 0.12), transparent 80%);
+}
+
+/* Scanline visual sweep animation */
+@keyframes cyber-sweep {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-sweep {
+  animation: cyber-sweep 6s linear infinite;
+}
+
+/* Pulse glow effect */
+@keyframes cyber-glow {
+  0%, 100% {
+    opacity: 0.3;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+  }
+}
+
+.animate-pulse-glow {
+  animation: cyber-glow 3s ease-in-out infinite;
+}
+
+/* Spinning radar sweep animation */
+@keyframes radar-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-radar {
+  animation: radar-spin 10s linear infinite;
+}
+
+/* Shimmer load effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #131d2e 25%, #1d2e46 50%, #131d2e 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ========================================================================== */
+/* KO'P CLASSIFIKATSIYALI PROFESSIONAL RESPONSIVE MEDIA CSS                   */
+/* ========================================================================== */
+
+/* Mobil sensorli ekranlar va umumiy vizual optimallashtirish */
+@media (max-width: 768px) {
+  body {
+    -webkit-tap-highlight-color: transparent; /* Mobil brauzerlarda ko'k rangli bosilish effektini olib tashlaydi */
+  }
+  
+  /* Sensorli ekranlarda qulay bosilish o'lchami (Touch Target Size) */
+  button, 
+  a, 
+  .interactive-target {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Katta hajmli jadvallarning mobil ekranlarda qulay surilishi va visual gradient ko'rsatgichi */
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.2) transparent;
+}
+
+/* Jadvalning surilish ko'rsatgichi soyasi */
+.table-responsive-shadow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(to left, rgba(7, 11, 20, 0.8), transparent);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Kiber-kartalar va sarlavhalarni mobil o'lchamlarda optimallashtirish */
+@media (max-width: 640px) {
+  .cyber-card-paddings {
+    padding: 1.25rem !important;
+  }
+  
+  /* Sarlavhalarni mobil ekranlarda o'ta cho'zilib ketishini oldini olish */
+  .cyber-hero-title {
+    font-size: 2.25rem !important; /* ~36px */
+    line-height: 2.75rem !important;
+  }
+  
+  .cyber-section-title {
+    font-size: 1.75rem !important; /* ~28px */
+    line-height: 2.25rem !important;
+  }
+}
+
+/* GIS Xaritasi va tahlil panellarining planshet/mobil ekranlardagi balandligi va strukturasini optimallashtirish */
+@media (max-width: 1024px) {
+  #cyber-map-viewport {
+    height: 380px !important;
+  }
+  
+  #dynamic-info-panel {
+    max-width: 100% !important;
+    border-radius: 1.5rem !important;
+    padding: 1.25rem !important;
+  }
+}
+
+/* Planshetlar va o'rta hajmli ekranlarda kiber-vidjetlarni bento-kataklar ko'rinishida saqlash */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .bento-grid-tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1.25rem !important;
+  }
+}
+
+/* Ultra-keng Retina monitorlarda tarkibning me'yordan ortiq cho'zilib, ko'zga noqulay bo'lishini cheklash */
+@media (min-width: 1536px) {
+  .ultra-wide-container {
+    max-width: 1512px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+

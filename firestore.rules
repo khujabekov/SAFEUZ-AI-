@@ -1,0 +1,129 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Safety Net: Default Deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- PRIMITIVE & GLOBAL HELPERS ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Admin module verification helper (Bootstrapped with User email and DB check)
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "muxiddin980001@gmail.com"
+        || exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // String size and regex validation helper
+    function isValidId(id) {
+      return id is string 
+        && id.size() > 0 
+        && id.size() <= 128 
+        && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- COLLECTION VALIDATION BLUEPRINTS ---
+
+    // 1. Volunteer Document Validation
+    function isValidVolunteer(data) {
+      return data.keys().hasAll(['id', 'name', 'telegramUsername', 'reputation', 'coins', 'blockedCount', 'status'])
+        && data.keys().size() == 7
+        && data.id is string && data.id.size() <= 64
+        && data.name is string && data.name.size() <= 128
+        && data.telegramUsername is string && data.telegramUsername.size() <= 64
+        && data.reputation is string && data.reputation.size() <= 64
+        && data.coins is int
+        && data.blockedCount is int
+        && data.status is string && data.status.size() <= 32;
+    }
+
+    // 2. Block Task Document Validation
+    function isValidBlockTask(data) {
+      return data.keys().hasAll(['id', 'title', 'target', 'type', 'coins', 'status', 'message', 'createdAt'])
+        && data.keys().size() == 8
+        && data.id is string && data.id.size() <= 64
+        && data.title is string && data.title.size() <= 128
+        && data.target is string && data.target.size() <= 128
+        && data.type is string && data.type.size() <= 64
+        && data.coins is int
+        && data.status is string && data.status.size() <= 32
+        && data.message is string && data.message.size() <= 1024
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    // 3. Block Report Document Validation
+    function isValidBlockReport(data) {
+      return data.keys().hasAll(['id', 'taskId', 'volunteerId', 'coinsAwarded', 'timestamp'])
+        && data.keys().size() == 5
+        && data.id is string && data.id.size() <= 64
+        && data.taskId is string && data.taskId.size() <= 64
+        && data.volunteerId is string && data.volunteerId.size() <= 64
+        && data.coinsAwarded is int
+        && data.timestamp is string && data.timestamp.size() <= 64;
+    }
+
+    // 4. Incident Record Document Validation
+    function isValidIncidentRecord(data) {
+      return data.keys().hasAll(['id', 'time', 'date', 'incident', 'district', 'riskLevel', 'inspector', 'status'])
+        && data.keys().size() >= 8
+        && data.id is string && data.id.size() <= 64
+        && data.time is string && data.time.size() <= 32
+        && data.date is string && data.date.size() <= 32
+        && data.incident is string && data.incident.size() <= 256
+        && data.district is string && data.district.size() <= 64
+        && data.riskLevel is string && data.riskLevel.size() <= 32
+        && data.inspector is string && data.inspector.size() <= 128
+        && data.status is string && data.status.size() <= 32;
+    }
+
+    // --- COLLECTION RULES MATCHES ---
+
+    // Volunteers collection - restricted to admins
+    match /volunteers/{volunteerId} {
+      allow read: if isAdmin() && isValidId(volunteerId);
+      allow create, update, delete: if isAdmin() && isValidId(volunteerId) && isValidVolunteer(incoming());
+    }
+
+    // Block Tasks collection
+    match /block_tasks/{taskId} {
+      allow get, list: if isSignedIn() && isValidId(taskId);
+      allow create, update, delete: if isAdmin() && isValidId(taskId) && isValidBlockTask(incoming());
+    }
+
+    // Block Reports collection (Atomic record of a successful block action)
+    match /block_reports/{reportId} {
+      allow get, list: if isSignedIn() && isValidId(reportId);
+      
+      // Volunteers can post a new report to claim coins
+      allow create: if isSignedIn()
+        && isValidId(reportId)
+        && isValidBlockReport(incoming())
+        // Guarantee that the volunteer and the task actually exist before posting report
+        && exists(/databases/$(database)/documents/volunteers/$(incoming().volunteerId))
+        && exists(/databases/$(database)/documents/block_tasks/$(incoming().taskId));
+    }
+
+    // Incidents collection (Accessible ONLY to the Admin module/admins)
+    match /incidents/{incidentId} {
+      allow get, list: if isAdmin() && isValidId(incidentId);
+      allow create: if isAdmin() && isValidId(incidentId) && isValidIncidentRecord(incoming());
+      allow update: if isAdmin() && isValidId(incidentId) && isValidIncidentRecord(incoming())
+        && incoming().id == existing().id;
+      allow delete: if isAdmin() && isValidId(incidentId);
+    }
+  }
+}

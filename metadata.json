@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Remix: Remix: Remix: Remix: SafeUZ AI",
+  "description": "SafeUZ AI - Shubhali tahdidlarni sun\u0027iy intellekt yordamida aniqlash va monitoring qilish milliy platformasi",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

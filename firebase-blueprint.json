@@ -1,0 +1,182 @@
+{
+  "entities": {
+    "volunteer": {
+      "title": "Volunteer",
+      "description": "Registered cyber-security volunteer tracking reputation and earned coins",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique volunteer identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the volunteer"
+        },
+        "telegramUsername": {
+          "type": "string",
+          "description": "Telegram user handle"
+        },
+        "reputation": {
+          "type": "string",
+          "description": "Badge level of the volunteer (e.g. Oltin, Kumush, Bronza)"
+        },
+        "coins": {
+          "type": "number",
+          "description": "Accumulated cyber coins currency"
+        },
+        "blockedCount": {
+          "type": "number",
+          "description": "Number of successfully completed blocks"
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the volunteer"
+        }
+      },
+      "required": ["id", "name", "telegramUsername", "coins", "blockedCount"]
+    },
+    "block_task": {
+      "title": "Block Task",
+      "description": "Cyber security blocking assignment dispatched by admin to volunteers",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique task identifier"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the threat"
+        },
+        "target": {
+          "type": "string",
+          "description": "Target bot/channel to block (e.g. @pul_yutug_bot)"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of target (e.g. Bot, Kanal, Guruh, Veb-sayt)"
+        },
+        "coins": {
+          "type": "number",
+          "description": "Coin bounty for successful block"
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the task (Active, Completed)"
+        },
+        "message": {
+          "type": "string",
+          "description": "Detailed description and instruction for blocking"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp of creation"
+        }
+      },
+      "required": ["id", "title", "target", "coins", "status"]
+    },
+    "block_report": {
+      "title": "Block Report",
+      "description": "Record of a volunteer successfully blocking a task target",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique report identifier"
+        },
+        "taskId": {
+          "type": "string",
+          "description": "Reference to the block_task"
+        },
+        "volunteerId": {
+          "type": "string",
+          "description": "Reference to the volunteer"
+        },
+        "coinsAwarded": {
+          "type": "number",
+          "description": "Coins awarded to this volunteer"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "ISO timestamp of completion"
+        }
+      },
+      "required": ["id", "taskId", "volunteerId", "coinsAwarded", "timestamp"]
+    },
+    "incident_record": {
+      "title": "Incident Record",
+      "description": "Detailed record of a cyber security threat, source, and volunteer submission data",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique incident identifier"
+        },
+        "time": {
+          "type": "string",
+          "description": "Submission time"
+        },
+        "date": {
+          "type": "string",
+          "description": "Submission date"
+        },
+        "incident": {
+          "type": "string",
+          "description": "Incident title or description"
+        },
+        "district": {
+          "type": "string",
+          "description": "District location"
+        },
+        "riskLevel": {
+          "type": "string",
+          "description": "Risk assessment level (CRITICAL, HIGH, MEDIUM, LOW)"
+        },
+        "inspector": {
+          "type": "string",
+          "description": "Assigned inspector name"
+        },
+        "status": {
+          "type": "string",
+          "description": "Resolution status"
+        },
+        "description": {
+          "type": "string",
+          "description": "Additional text details of the incident"
+        },
+        "source": {
+          "type": "string",
+          "description": "Source of threat (e.g. telegram username, URL)"
+        },
+        "target": {
+          "type": "string",
+          "description": "Target of threat"
+        },
+        "volunteer": {
+          "type": "object",
+          "description": "Optional embedded volunteer submission metadata"
+        }
+      },
+      "required": ["id", "time", "date", "incident", "district", "riskLevel", "inspector", "status"]
+    }
+  },
+  "firestore": {
+    "/volunteers/{volunteerId}": {
+      "schema": "volunteer",
+      "description": "Collection of cyber security volunteers with coins and badges"
+    },
+    "/block_tasks/{taskId}": {
+      "schema": "block_task",
+      "description": "List of channels, groups, and bots scheduled for blocking tasks"
+    },
+    "/block_reports/{reportId}": {
+      "schema": "block_report",
+      "description": "Saves successful block claims by volunteers"
+    },
+    "/incidents/{incidentId}": {
+      "schema": "incident_record",
+      "description": "List of reported or logged cyber threats and security incidents"
+    }
+  }
+}
